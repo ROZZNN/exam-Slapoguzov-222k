@@ -1,14 +1,48 @@
-import React from 'react';
+import Script from './formascript'
+import React, { useState } from 'react';
+import {
+  validateDateOfBirth, validateFullName, validatePhoneNumber, validateEmail, validateFutureDate,
+} from './nomber';
 
-const formm = () => {
+const Farmm = () => {
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumberError, setPhoneNumberError] = useState('');
+  const handlePhoneNumberChange = (value) => {
+    const cleaned = value.replace(/[^0-9+-]{11}/g, ''); // only allow digits, +, and -
+    const formattedValue = formatPhoneNumber(cleaned);
+    setPhoneNumber(formattedValue);
+  
+    if (value.trim() === '') {
+      setPhoneNumberError('Номер телефона не может быть пустым');
+    } else {
+      setPhoneNumberError('');
+    }
+  };
+  const formatPhoneNumber = (value) => {
+    const cleaned = (`${value}`).replace(/\D/g, '');
+    const match = cleaned.match(/^(7|8)?(\d{3})(\d{3})(\d{2})(\d{2})$/);
+    if (match) {
+      const intlCode = (match[1] ? '+7' : '');
+      return [intlCode, match[2], match[3], match[4], match[5]].filter(Boolean).join('-');
+    }
+    return value;
+  };
   return (
     <div class='form-reg'>
-    <form action="/process-reservation" method="post" class='class-style'>
+    <form class='class-style'>
     <label for="name">Имя:</label>
-    <input type="text" id="name" name="name" placeholder="Иван" required pattern="[А-Яа-я]+"/>
+    <input type="text" id="name" name="name" placeholder="Иван"/>
     
     <label for="phone">Телефон:</label>
-    <input type="tel" id="phone" name="phone" list="tel-list" placeholder="+7 (900) 123-45-67" required pattern="^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$"/>
+    <input
+            type="text"
+            id="phoneNumber"
+            value={phoneNumber}
+            onChange={(e) => handlePhoneNumberChange(e.target.value)}
+            //onBlur={handleBlur}
+            placeholder="+7-XXX-XXX-XX-XX"
+            required
+          />
     
     <label for="dateTimeStart">Дата и время начала брони:</label>
     <input type="datetime-local" id="dateTimeStart" name="dateTimeStart" min="2022-04-18T00:00"/>
@@ -23,10 +57,10 @@ const formm = () => {
     <input type="checkbox" id="agreeTerms" name="agreeTerms" required checked/>
     <label for="agreeTerms">Я согласен(-на) с условиями</label>
     
-    <button>Забронировать</button>
+    <button id="submitButton" type="submit" onClick={Script}>Забронировать</button>
     </form>
     </div>
     )
 
     };
-export default formm
+export default Farmm
