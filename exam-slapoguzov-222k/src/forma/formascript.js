@@ -1,65 +1,41 @@
-const Script = () => {
-    document.getElementById('submitButton').addEventListener('click', function(event) {
-        function allFieldsAreValid() {
-            var name = document.getElementById('name').value;
-            var phone = document.getElementById('phone').value;
-            var dateTimeStart = document.getElementById('dateTimeStart').value;
-            var duration = document.getElementById('duration').value;
-            var agreeTerms = document.getElementById('agreeTerms').checked;
+// проверка на ввод имени
+const validateFullName = (fullName) => {
+    // проверка на наличие хотя бы двух слов кириллицей
+    const regex = /^[А-Яа-яЁё]+\s[А-Яа-яЁё]+(\s[А-Яа-яЁё]+)?$/;
+  
+    return regex.test(fullName);
+  };  
+  
 
-        function validateName(name) {
-            var pattern = /^[А-Яа-яЁё]+\s[А-Яа-яЁё]+(\s[А-Яа-яЁё]+)?$/;
-            return pattern.test(name);
-        }
+  const validatePhoneNumber = (phoneNumber) => {
+    const cleaned = phoneNumber.replace(/\D/g, '');
+    return /^(?:\+7|8)\d{10}$/.test(cleaned);
+  };
+  
+  const validateFutureDate = (date) => {
+    const selectedDate = new Date(date);
+    const currentDate = new Date();
 
-        function validatePhone(phone) {
-            var pattern = /^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$/;
-            return pattern.test(phone);
-        }
+    selectedDate.setHours(0, 0, 0, 0);
+    currentDate.setHours(0, 0, 0, 0);
+  
+    const nextDay = new Date(currentDate);
+    nextDay.setDate(currentDate.getDate() + 1);
+  
+    return selectedDate >= nextDay;
+  };
+  function validateForm() {
+    var agreeCheckbox = document.getElementById('agreeCheckbox');
 
-        // function validateDateTimeStart(dateTimeStart) {
-        //     var minDate = new Date(date);
-        //     var dateTime = new new Date();
-
-        //     selectedDate.setHours(0, 0, 0, 0);
-        //     currentDate.setHours(0, 0, 0, 0);
-            
-        //     const nextDay = new Date(currentDate);
-        //     nextDay.setDate(currentDate.getDate() + 1);
-          
-        //     return selectedDate >= nextDay;
-        
-        // }
-
-        function validateDuration(duration) {
-            var validDurations = ['1', '3', '5'];
-            return validDurations.includes(duration);
-        }
-
-        function validateAgreeTerms(agreeTerms) {
-            return agreeTerms;
-        }
-
-        document.getElementById('submitButton').addEventListener('click', function(event) { 
-            event.preventDefault();
-
-
-        if (allFieldsAreValid) {
-            this.form.submit();
-        }
-        });
-        return validateName(name) && validatePhone(phone) && validateDuration(duration) && validateAgreeTerms(agreeTerms);
-        }
-        });
-        const handleBlur = (e) => {
-            const { id, value } = e.target;
-            switch (id) {
-              case 'phoneNumber':
-                handlePhoneNumberChange(value);
-                break;
-              default:
-                break;
-            }
-          };
-    }
-export default Script
+    if (!agreeCheckbox.checked) {
+        alert('Вы должны согласиться с условиями!');
+        return false;
+      }
+    };
+  
+export {
+    validateFullName, 
+    validateFutureDate,
+    validatePhoneNumber,
+    validateForm
+}
